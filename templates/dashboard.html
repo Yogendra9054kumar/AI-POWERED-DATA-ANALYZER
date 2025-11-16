@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - AI Data Insight</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .navbar{
+      background-color: rgb(39, 41, 41);
+    }
+    .chart-card {
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: none;
+      border-radius: 15px;
+    }
+    .chart-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .chart-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+    .btn-success:hover {
+      transform: scale(1.05);
+      transition: all 0.3s;
+    }
+    footer {
+      background: linear-gradient(90deg, #198754, #0d6efd);
+      color: rgb(0, 0, 0);
+      font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}">AI Data Insight</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+          <!-- <li class="nav-item"><a class="nav-link" href="{{ url_for('insights') }}">Insights</a></li> -->
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Dashboard Section -->
+  <section class="container py-5">
+
+    <h2 class="mb-4 text-success">Dataset Preview - {{ filename }}</h2>
+    <div class="table-responsive mb-5 shadow-sm bg-white p-3 rounded">
+      {{ tables|safe }}
+    </div>
+
+    <!-- Histograms -->
+    <h2 class="mb-4 text-success">Histograms</h2>
+    <div class="row g-4">
+      {% if histograms and histograms|length > 0 %}
+        {% for hist in histograms %}
+        <div class="col-md-6">
+          <div class="card chart-card p-3 shadow-sm">
+            {{ hist|safe }}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted">No numeric columns to display histograms.</p>
+      {% endif %}
+    </div>
+
+    <!-- Scatter Plots -->
+    <h2 class="mb-4 mt-5 text-success">Scatter Plots</h2>
+    <div class="row g-4">
+      {% if scatters and scatters|length > 0 %}
+        {% for sc in scatters %}
+        <div class="col-md-6">
+          <div class="card chart-card p-3 shadow-sm">
+            {{ sc|safe }}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted">No numeric column pairs to display scatter plots.</p>
+      {% endif %}
+    </div>
+
+    <!-- Insights -->
+    <h2 class="mb-4 mt-5 text-success">Dataset Insights</h2>
+    <div class="bg-white shadow-sm p-4 rounded mb-5">
+      {% if insights_text %}
+        {% if insights_text is string %}
+          <p>{{ insights_text }}</p>
+        {% else %}
+          <ul>
+            {% for insight in insights_text %}
+              <li>{{ insight }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% else %}
+        <p class="text-muted">No insights available.</p>
+      {% endif %}
+    </div>
+
+    <!-- PDF Button -->
+    {% if filename != "No file" %}
+    <a href="{{ url_for('download_pdf', filename=filename) }}" class="btn btn-success mb-5">
+      Download PDF Report
+    </a>
+    {% endif %}
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-3 mt-5">
+    <div class="container">
+      <p class="mb-0">© 2025 AI Data Insight Platform | Developed by Yogendra Kumar</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
